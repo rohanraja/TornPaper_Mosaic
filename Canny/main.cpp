@@ -4,6 +4,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <math.h>
+
+#define PI 3.14159265
 
 using namespace cv;
 using namespace std;
@@ -14,17 +17,17 @@ void MyFilledCircle( Mat img, Point center )
     int lineType = 8;
     
     circle( img,
-           center,10,
+           center,5,
            Scalar( 0, 0, 255 ),
            thickness,
            lineType );
 }
 
 
-Mat DisplayText( Mat image, char * str)
+Mat DisplayText( Mat image, char * str, Point &org)
 {
     Size textsize = getTextSize(str, CV_FONT_HERSHEY_COMPLEX,  0.4, 5, 0);
-    Point org(5,20);
+    
     
     int lineType = 2;
     
@@ -56,6 +59,10 @@ class MatBoundary
     
    
 public:
+    
+    MatBoundary()
+    {
+    }
     
     vector<vector<Point> > contours;
     int maxAreaIdx;
@@ -174,27 +181,28 @@ public:
     
 };
 
-
-
 int thresh = 0;
 
 /// Function header
 void thresh_callback(int, void* );
 
+Mat drawing;
+MatBoundary mb;
+
 /** @function main */
 int main( int argc, char** argv )
 {
     /// Load source image and convert it to gray
-    Mat src = imread( "/Users/rohanraja/Documents/Rails_Projects/Opensoft/santosh_kumar/bin/other files/Image001.jpg" , 1 );
+    Mat src = imread( "/Users/rohanraja/Documents/Rails_Projects/Opensoft/santosh_kumar/bin/other files/Image003.jpg" , 1 );
     
-    resize(src, src, Size(), 0.1, 0.1, INTER_CUBIC);
+    resize(src, src, Size(), 0.3, 0.3, INTER_CUBIC);
     
-    MatBoundary mb(src) ;
+    mb = *new MatBoundary(src) ;
 
-    Mat drawing = mb.getBoundary();
+    drawing = mb.getBoundary();
     
-    src = imread( "/Users/rohanraja/Documents/Rails_Projects/Opensoft/santosh_kumar/bin/other files/Image003.jpg" , 1 );
-    resize(src, src, Size(), 0.1, 0.1, INTER_CUBIC);
+    src = imread( "/Users/rohanraja/Documents/Rails_Projects/Opensoft/santosh_kumar/bin/other files/Image001.jpg" , 1 );
+    resize(src, src, Size(), 0.3, 0.3, INTER_CUBIC);
     
     MatBoundary mb2(src) ;
     
@@ -205,11 +213,16 @@ int main( int argc, char** argv )
     imshow( source_window, dr2 );
     namedWindow( "Contours", CV_WINDOW_AUTOSIZE );
     imshow( "Contours", drawing );
-    moveWindow( "Contours",400, 0 );
+    moveWindow( "Contours",400, 1 );
     
     
       createTrackbar( "TKBAR", source_window, &thresh, mb.contours[mb.maxAreaIdx].size(), thresh_callback );
-    thresh_callback(0,0);
+ //   thresh_callback(0,0);
+   
+    for (int i=0; i<mb.contours[mb.maxAreaIdx].size(); i++) {
+        thresh = i;
+        thresh_callback(0,0);
+    }
     //on_trackbar( alpha_slider, 0 );
     waitKey(0);
     return(0);
@@ -218,25 +231,63 @@ int main( int argc, char** argv )
 /** @function thresh_callback */
 void thresh_callback(int, void* )
 {
-
-    Mat src = imread( "/Users/rohanraja/Documents/Rails_Projects/Opensoft/santosh_kumar/bin/other files/Image001.jpg" , 1 );
+  //  cout << thresh <<",";
     
-    resize(src, src, Size(), 0.1, 0.1, INTER_CUBIC);
+    Mat tmpdraw = drawing.clone();
     
-    MatBoundary mb(src) ;
+    MyFilledCircle(tmpdraw,mb.contours[mb.maxAreaIdx][thresh]);
     
-    Mat drawing = mb.getBoundary();
+    char strr[80], strr2[80], strr3[80];
     
-    MyFilledCircle(drawing,mb.contours[mb.maxAreaIdx][thresh]);
+    Point p1 = mb.contours[mb.maxAreaIdx][thresh];
+    Point p2 = mb.contours[mb.maxAreaIdx][thresh-2];
+    Point p3 = mb.contours[mb.maxAreaIdx][thresh+2];
     
-    char strr[80];
-    
-    string str = to_string(mb.contours[mb.maxAreaIdx][thresh].x  ) + "," + to_string(mb.contours[mb.maxAreaIdx][thresh].y) ;
+    string str = to_string(p1.x) + "," + to_string(p1.y) ;
     
     strcpy(strr, str.c_str());
+    Point org(5,20);
+    Point org2(5,40);
+    Point org3(5,60);
+   
+    Point dp = p1 - p2;
     
-    drawing = DisplayText(drawing, strr);
+    str = to_string(dp.x)+ "," + to_string(dp.y);
+    strcpy(strr2, str.c_str());
     
-    imshow( "Contours", drawing );
+    Point dp2 = p3 - p1;
+    
+    Point ddp = dp2 - dp;
+    
+    int sqr = ddp.x * ddp.x + ddp.y * ddp.y ;
+    
+    if (sqr>1) {
+        
+        p2 = mb.contours[mb.maxAreaIdx][thresh-3];
+        p3 = mb.contours[mb.maxAreaIdx][thresh+3];
+        dp = p1 - p2;
+        dp2 = p3 - p1;
+        ddp = dp2 - dp;
+        sqr = ddp.x * ddp.x + ddp.y * ddp.y ;
+        
+        if (sqr>1)
+            MyFilledCircle(drawing,mb.contours[mb.maxAreaIdx][thresh]);
+    }
+    
+    if (dp.x == 0) {
+        str = "Grad= " + to_string((int)(90));
+    }
+    else
+        str = "Grad= " + to_string((int)(atan (dp.y/dp.x) * 180 / PI));
+    
+    strcpy(strr3, str.c_str());
+    
+    tmpdraw = DisplayText(tmpdraw, strr,org );
+    tmpdraw = DisplayText(tmpdraw, strr2,org2 );
+    tmpdraw = DisplayText(tmpdraw, strr3,org3 );
+    
+    imshow( "Contours", tmpdraw );
+    
+   // waitKey(1);
     
 }
