@@ -138,6 +138,7 @@
 		769D9F6E18DC850200EA0BA3 /* libopencv_videostab.2.4.8.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libopencv_videostab.2.4.8.dylib; path = ../../../../../usr/local/Cellar/opencv/2.4.8.2/lib/libopencv_videostab.2.4.8.dylib; sourceTree = "<group>"; };
 		769D9F6F18DC850200EA0BA3 /* libopencv_videostab.2.4.8.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libopencv_videostab.2.4.8.dylib; path = ../../../../../usr/local/Cellar/opencv/2.4.8.2/lib/libopencv_videostab.2.4.8.dylib; sourceTree = "<group>"; };
 		769D9F7018DC850200EA0BA3 /* libopencv_videostab.2.4.8.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libopencv_videostab.2.4.8.dylib; path = ../../../../../usr/local/Cellar/opencv/2.4.8.2/lib/libopencv_videostab.2.4.8.dylib; sourceTree = "<group>"; };
+		769D9FAE18DED39300EA0BA3 /* DrawFunc.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DrawFunc.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -282,6 +283,7 @@
 			children = (
 				769D9F3118DC84A300EA0BA3 /* main.cpp */,
 				769D9F3318DC84A300EA0BA3 /* Canny.1 */,
+				769D9FAE18DED39300EA0BA3 /* DrawFunc.h */,
 			);
 			path = Canny;
 			sourceTree = "<group>";
