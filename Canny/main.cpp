@@ -1,10 +1,5 @@
-#include "opencv2/highgui/highgui.hpp"
-#include "opencv2/imgproc/imgproc.hpp"
-#include <iostream>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <math.h>
+// Created by Rohan Raja
+
 #include "DrawFunc.h"
 #include "MatBoundary.h"
 #include "NewVector.h"
@@ -15,9 +10,7 @@
 using namespace cv;
 using namespace std;
 
-
-
-
+// Compile with G++ : $ g++ `pkg-config --cflags --libs opencv` main.cpp
 
 int thresh = 1702;
 
@@ -42,10 +35,7 @@ int main( int argc, char** argv )
     drawing = mb.getBoundary();
     
     drawing = mb.getCorners(3);
-    
-    
 
-    
     drawing2 = drawing;
     
     src = imread( "/Users/rohanraja/Documents/Rails_Projects/Opensoft/santosh_kumar/bin/other files/Image001.jpg" , 1 );
@@ -57,27 +47,22 @@ int main( int argc, char** argv )
     
     dr2 = mb2.getCorners(3);
     
-    
-    
     char* source_window = "Source";
     namedWindow( source_window, CV_WINDOW_AUTOSIZE );
     imshow( source_window, dr2 );
-//    namedWindow( "Contours", CV_WINDOW_AUTOSIZE );
-//    imshow( "Contours", drawing );
-//    moveWindow( "Contours",400, 1 );
+    namedWindow( "Contours", CV_WINDOW_AUTOSIZE );
+    imshow( "Contours", drawing );
+    moveWindow( "Contours",400, 1 );
     
   
-    VectTrans vtt(mb.contours[mb.maxAreaIdx], mb2, mb2.corners.size()/2 -15, 20);
+    VectTrans vtt(mb.contours[mb.maxAreaIdx], mb2, mb2.corners.size()/2 -5, 20);
     
     vtt.findMostSimilar();
     
       createTrackbar( "TKBAR", source_window, &thresh, mb.contours[mb.maxAreaIdx].size(), thresh_callback );
     //thresh_callback(0,0);
    
- //   VectTrans vtt(mb, mb2, sim_idx);
-    
-    
-    //on_trackbar( alpha_slider, 0 );
+
     waitKey(0);
     return(0);
 }

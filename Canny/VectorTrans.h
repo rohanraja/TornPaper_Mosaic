@@ -83,7 +83,7 @@ public:
     }
     
     
-    
+    int m2score = 0;
     
     int solve2(int startIdx = 0, int iscnt = 1 )
     {
@@ -94,6 +94,7 @@ public:
         else
             cnt_idx = 0;
         
+        
         Point center = b.pts[cnt_idx];
         Point endpt = b.pts[b.num-1 - cnt_idx];
         
@@ -102,7 +103,7 @@ public:
         
         nv.translate_to_point(nv.pts[0] -1*center);
         
-        Mat nvmat = nv.plotPoints(4);
+        Mat nvmat = nv.plotPoints(3);
         
         Point v11 = nv.pts[nv.num-1] - center ;
         Point v22 = endpt - center ;
@@ -129,7 +130,7 @@ public:
             
         }
         
-        String strr = to_string(score);
+        String strr = to_string(((score*100)/m2score)) + " %";
         char stt[80];
         strcpy(stt, strr.c_str()) ;
         Point org(50,50);
@@ -143,7 +144,7 @@ public:
         namedWindow( "Rotated", CV_WINDOW_AUTOSIZE );
         imshow( "Rotated", rotated );
         
-        return score;
+        return (score*100)/m2score;
         
     }
     
@@ -212,11 +213,22 @@ public:
     
     void findMostSimilar()
     {
+        double t = (double)getTickCount();
         int sim, sim_max = INT_MAX, sim_idx, sim_order = 1 ;
         
+        int score = 0;
+        for (int i=0; i < m2.rows; i++) {
+            for (int j=0; j < m2.cols; j++) {
+                Vec3b intensity = m2.at<Vec3b>(i,j);
+                score+= intensity[0] + intensity[1] + intensity[2];
+            }
+            
+        }
         
+        m2score = score;
         
-        for (int i=0; i < conts.size(); i = i + 10) {
+        int icnt = 10 ;
+        for (int i=0; i < conts.size(); i = i + icnt) {
             
             //   VectTrans vtt(mb, mb2, i);
             
@@ -228,8 +240,9 @@ public:
                 sim_idx = i;
                 sim_order = 1;
                 //   cout << "\n***Min Found" << sim_idx ;
-                waitKey(10);
+             //   waitKey(1);
             }
+         //   waitKey(1);
             
             sim = solve2(i,0);
             
@@ -238,7 +251,71 @@ public:
                 sim_idx = i;
                 sim_order = 0;
                 //   cout << "\n***Min Found" << sim_idx ;
-                waitKey(10);
+              //  waitKey(1);
+            }
+            
+//            if(sim_max<65)
+//            {   if(icnt > 10)
+//                    i = i - 10;
+//                icnt = 10;
+//                cout << "**********" << icnt ;
+//            }
+//            if(sim_max<50)
+//            {
+//                if(icnt > 4)
+//                    i = i - 15;
+//                icnt = 4;
+//                cout << "**********" << icnt ;
+//            }
+//
+          //  cout << sim_max << "\n\n";
+            if(sim<65)
+            {
+                if(icnt > 5)
+                {
+                    i = i - icnt;
+                    
+                     icnt = 5;
+                //    cout << "\n**********ICNT CHANGED TO : " << icnt << "\n" ;
+                }
+               
+                
+            }
+            
+            if(sim<80)
+            {
+                if(icnt > 10)
+                {
+                    i = i - 10;
+                    
+                    icnt = 10;
+                //    cout << "\n**********ICNT CHANGED TO : " << icnt << "\n" ;
+                }
+                
+                
+            }
+            
+            if(sim < 95)
+            {
+                if(icnt > 15)
+                {
+                    i-=5;
+                    icnt = 15;
+               //     cout << "\n**********ICNT CHANGED TO : " << icnt << "\n"  ;
+                    
+                }
+                
+            }
+            
+            if(sim > 90)
+            {
+                if(icnt < 20)
+                {
+                    icnt = 20;
+                //    cout << "\n**********ICNT CHANGED TO : " << icnt << "\n"  ;
+                    
+                }
+                
             }
             
             //waitKey(1);
@@ -247,11 +324,17 @@ public:
             
         }
         
-        cout << "\n Minimum Similarity = " << sim_max;
+        t = ((double)getTickCount() - t)/getTickFrequency();
+        cout << "Times passed in seconds: " << t << endl;
+        
+        cout << "\n Minimum Similarity = " << 100 - sim_max << " %";
         cout << "\n Minimum Similarity INDEX = " << sim_idx;
         cout << "\n Minimum Similarity INDEX = " << sim_order;
         
+        
         solve2(sim_idx, sim_order);
+        
+        
     }
     
     

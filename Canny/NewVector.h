@@ -52,7 +52,7 @@ public:
     Mat plotPoints(int trans = 1)
     {
         
-        vector<vector<Point>> contours(1);
+        vector<vector<Point> > contours(1);
         contours[0] = pts;
         Point maxC = getMaxCoord();
         //Mat drawing = Mat::zeros( maxC.y + 10,maxC.x + 10, CV_8UC3 );
