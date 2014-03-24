@@ -128,16 +128,18 @@ public:
         
         //    cout <<  contours[maxAreaIdx];
         
-        return drawing;
+        return drawing.clone();
     }
     vector<Point> corners;
+    vector<int> cornerIndexes;
+    
     Mat getCorners(int delta)
     {
         Point p1, p2, p3, dp, dp2, ddp;
         int sqr ;
+        int cornercnt = 0;
         
-        
-        for (int i=0; i<contours[maxAreaIdx].size(); i++) {
+        for (int i=delta; i<contours[maxAreaIdx].size() - delta; i++) {
             
             
             p1 = contours[maxAreaIdx][i];
@@ -165,6 +167,7 @@ public:
                 {
                     MyFilledCircle(this->drawing, contours[maxAreaIdx][i]);
                     corners.push_back(contours[maxAreaIdx][i]);
+                    cornerIndexes.push_back(i);
                 }
             }
             

@@ -49,19 +49,15 @@ public:
         
     }
     
-    Mat plotPoints(int trans = 1)
+    Mat plotPoints(int trans = 1, int x = 700, int y = 700 )
     {
-        
+       
         vector<vector<Point> > contours(1);
         contours[0] = pts;
-        Point maxC = getMaxCoord();
-        //Mat drawing = Mat::zeros( maxC.y + 10,maxC.x + 10, CV_8UC3 );
-        Mat drawing = Mat::zeros( 700,700, CV_8UC3 );
-        Point tr(maxC.x / 2,maxC.y / 2);
+       // Mat drawing = Mat::zeros( maxC.y + 10,maxC.x + 10, CV_8UC3 );
         
-        if (trans==9) {
-            translate_to_point(tr);
-        }
+         Mat drawing = Mat::zeros( y + 30, x +30, CV_8UC3 );
+        
         
         
         Scalar color = Scalar( 255, 255, 255 );
@@ -83,6 +79,8 @@ public:
         
         namedWindow( name, CV_WINDOW_AUTOSIZE );
         imshow(name, drawing );
+        
+        
         
         return drawing;
     }
@@ -108,6 +106,30 @@ public:
                 max_x = pts[i].x;
             }
             if(max_y < pts[i].y)
+            {
+                max_y = pts[i].y;
+            }
+            
+        }
+        
+        maxx.x = max_x;
+        maxx.y = max_y;
+        
+        return maxx;
+    }
+    
+    Point getMinCoord()
+    {
+        Point maxx(0,0) ;
+        int max_x = INT_MAX, max_y = INT_MAX;
+        
+        for (int i=0; i<num; i++) {
+            
+            if(max_x > pts[i].x)
+            {
+                max_x = pts[i].x;
+            }
+            if(max_y > pts[i].y)
             {
                 max_y = pts[i].y;
             }

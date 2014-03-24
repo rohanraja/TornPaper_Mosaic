@@ -12,7 +12,7 @@ using namespace std;
 
 // Compile with G++ : $ g++ `pkg-config --cflags --libs opencv` main.cpp
 
-int thresh = 1702;
+int thresh = 65;
 
 /// Function header
 void thresh_callback(int, void* );
@@ -45,22 +45,28 @@ int main( int argc, char** argv )
     
     Mat dr2 = mb2.getBoundary();
     
-    dr2 = mb2.getCorners(3);
+  //  dr2 = mb2.getCorners(3);
+    
+    CompareTwo cmp("/Users/rohanraja/Documents/Rails_Projects/Opensoft/santosh_kumar/bin/other files/Image003.jpg", "/Users/rohanraja/Documents/Rails_Projects/Opensoft/santosh_kumar/bin/other files/Image001.jpg", "/Users/rohanraja/Documents/Rails_Projects/Opensoft/santosh_kumar/bin/other files/Image002.jpg");
+    
+    cmp.findMostSimilar();
     
     char* source_window = "Source";
-    namedWindow( source_window, CV_WINDOW_AUTOSIZE );
-    imshow( source_window, dr2 );
-    namedWindow( "Contours", CV_WINDOW_AUTOSIZE );
-    imshow( "Contours", drawing );
-    moveWindow( "Contours",400, 1 );
-    
+//    namedWindow( source_window, CV_WINDOW_AUTOSIZE );
+//    imshow( source_window, dr2 );
+//    namedWindow( "Contours", CV_WINDOW_AUTOSIZE );
+//    imshow( "Contours", drawing );
+//    moveWindow( "Contours",400, 1 );
+//    
   
-    VectTrans vtt(mb.contours[mb.maxAreaIdx], mb2, mb2.corners.size()/2 -5, 20);
+  //  VectTrans vtt(mb.contours[mb.maxAreaIdx], mb2, mb2.corners.size()/2 -15, 25, mb.cornerIndexes);
     
-    vtt.findMostSimilar();
+//    VectTrans vtt(mb2.contours[mb.maxAreaIdx], mb, 65, 30, mb2.cornerIndexes);
+    
+  //  vtt.findMostSimilar();
     
       createTrackbar( "TKBAR", source_window, &thresh, mb.contours[mb.maxAreaIdx].size(), thresh_callback );
-    //thresh_callback(0,0);
+   // thresh_callback(0,0);
    
 
     waitKey(0);
@@ -71,7 +77,7 @@ int main( int argc, char** argv )
 /** @function thresh_callback */
 void thresh_callback(int, void* )
 {
- //   cout << thresh <<",";
+    cout << "Thresh = " << thresh <<",";
     
     Mat tmpdraw = drawing2.clone();
     
@@ -112,9 +118,12 @@ void thresh_callback(int, void* )
     tmpdraw = DisplayText(tmpdraw, strr2,org2 );
     tmpdraw = DisplayText(tmpdraw, strr3,org3 );
     
-
-    VectTrans vvv(mb, mb2, thresh);
-    vvv.solve();
+   // VectTrans vtt(mb.contours[mb.maxAreaIdx], mb2, mb2.corners.size()/2 - thresh, 25, mb.cornerIndexes);
+   //  VectTrans vtt(mb2.contours[mb.maxAreaIdx], mb, thresh, 30, mb2.cornerIndexes);
+  //  vtt.findMostSimilar();
+    
+  //  VectTrans vvv(mb, mb2, thresh);
+  //  vvv.solve();
 //    imshow( "Contours", tmpdraw );
     
    // waitKey(1);
