@@ -3,7 +3,9 @@
 #include "DrawFunc.h"
 #include "MatBoundary.h"
 #include "NewVector.h"
+#include "RepositionTwoIm.h"
 #include "VectorTrans.h"
+
 
 #define PI 3.14159265
 

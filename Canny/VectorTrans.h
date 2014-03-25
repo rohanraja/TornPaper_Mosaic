@@ -92,6 +92,7 @@ public:
     
     int m2score = 0;
     int opti_end_idx, opti_start_idx ;
+    float angle_of_rot ;
     int solve2(int startIdx = 0, int iscnt = 1 )
     {
         
@@ -108,7 +109,7 @@ public:
         
         nv = *new newVector();
         nv = getPoint_Dist2(conts[startIdx],p2dist, conts) ;
-        opti_end_idx = getIndexofPoint2(nv.pts[nv.num - 2], conts);
+        opti_end_idx = getIndexofPoint2(nv.pts[nv.num - 2], conts) ;
         
         nv.translate_to_point(nv.pts[0] -1*center);
         
@@ -183,6 +184,8 @@ public:
             anglegrad = 1;
         
         warp_mat = getRotationMatrix2D( center, anglegrad*ss, 1 );
+        
+        angle_of_rot = anglegrad*ss;
         
         Mat rotated = Mat::zeros( 10, 10, CV_8UC3 ); ;
         
@@ -289,6 +292,7 @@ public:
         return score;
     }
     
+    int sim_order = 1 ;
     
     int findMostSimilar(int st = 0, int len = 10, vector<Point> &countt = *new vector<Point> )
     {
@@ -309,7 +313,7 @@ public:
         p2dist = norm(b.pts[0] - b.pts[b.num-1]) ;
         
         double t = (double)getTickCount();
-        int sim, sim_max = INT_MAX, sim_idx, sim_order = 1 ;
+        int sim, sim_max = INT_MAX, sim_idx ;
         
         int score = 0;
         for (int i=0; i < m2.rows; i++) {
@@ -538,24 +542,32 @@ class CompareTwo
 {
     MatBoundary MB1, MB2, MB3 ;
     Mat src1, src2,src3;
+    Mat main1, main2, main3 ;
 public:
     
     CompareTwo(char * m1src, char * m2src,  char * m3src)
     {
         src1 = imread( m1src, 1 );
         resize(src1, src1, Size(), 0.3, 0.3, INTER_CUBIC);
+        main1 = src1.clone();
         MB1 = *new MatBoundary(src1) ;
         src1 = MB1.getBoundary();
-        MB1.getCorners(3);
+        Mat test = MB1.getCorners(3);
+        
+        namedWindow( "TEST CORNERS", CV_WINDOW_AUTOSIZE );
+        imshow("TEST CORNERS", test);
+        
         
         src2 = imread( m2src, 1 );
         resize(src2, src2, Size(), 0.3, 0.3, INTER_CUBIC);
+        main2 = src2.clone();
         MB2 = *new MatBoundary(src2) ;
         src2 = MB2.getBoundary();
         MB2.getCorners(3);
         
         src3 = imread( m3src, 1 );
         resize(src3, src3, Size(), 0.3, 0.3, INTER_CUBIC);
+        main3 = src3.clone();
         MB3 = *new MatBoundary(src3) ;
         MB3.getBoundary();
         MB3.getCorners(3);
@@ -563,7 +575,7 @@ public:
                 
     }
     
-    void findMostSimilar(int stidx = 15, int numvecc = 10)
+    void findMostSimilar(int stidx = 15, int numvecc = 15)
     {
         // Take one sure part from P1, test for best match with all other parts
         
@@ -582,14 +594,26 @@ public:
         
         namedWindow( "IM1", CV_WINDOW_AUTOSIZE );
         
+        cout << MB2.corners[stidx+numvecc] << "\n" << MB1.contours[MB1.maxAreaIdx][vtt.opti_start_idx];
         
         MyFilledCircle(src1, MB1.contours[MB1.maxAreaIdx][vtt.opti_start_idx] );
         MyFilledCircle(src1, MB1.contours[MB1.maxAreaIdx][vtt.opti_end_idx] );
       //  MyFilledCircle(src1, MB2.corners[stidx+numvecc] );
         imshow( "IM1", src1 );
         
-        vtt.findMostSimilar(stidx,numvecc,MB3.contours[MB3.maxAreaIdx]);
+        Point p, cnt_for_rot;
         
+        if(vtt.sim_order ==1)
+            cnt_for_rot = MB2.corners[stidx+numvecc] ;
+        else
+            cnt_for_rot = MB2.corners[stidx];
+        
+        p = MB1.contours[MB1.maxAreaIdx][vtt.opti_start_idx] - cnt_for_rot ;
+        
+        RepositionTwoIm rp(src1, src2);
+        rp.addImages(p,cnt_for_rot , vtt.angle_of_rot);
+        rp.showImages();
+                
 //        for(int i = 255; 330 - 30; i++)
 //        {
 //            cout << "\ni = " << i;
