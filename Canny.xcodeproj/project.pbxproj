@@ -143,6 +143,7 @@
 		769D9FB018DF2C0E00EA0BA3 /* NewVector.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = NewVector.h; sourceTree = "<group>"; };
 		769D9FB118DF2C3E00EA0BA3 /* VectorTrans.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = VectorTrans.h; sourceTree = "<group>"; };
 		769D9FDD18E0ECE300EA0BA3 /* RepositionTwoIm.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RepositionTwoIm.h; sourceTree = "<group>"; };
+		769D9FDE18E209DF00EA0BA3 /* NewCorner.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = NewCorner.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -238,6 +239,7 @@
 				769D9FB018DF2C0E00EA0BA3 /* NewVector.h */,
 				769D9FB118DF2C3E00EA0BA3 /* VectorTrans.h */,
 				769D9FDD18E0ECE300EA0BA3 /* RepositionTwoIm.h */,
+				769D9FDE18E209DF00EA0BA3 /* NewCorner.h */,
 			);
 			path = Canny;
 			sourceTree = "<group>";

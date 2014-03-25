@@ -5,6 +5,7 @@
 #include "NewVector.h"
 #include "RepositionTwoIm.h"
 #include "VectorTrans.h"
+#include "NewCorner.h"
 
 
 #define PI 3.14159265

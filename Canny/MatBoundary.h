@@ -123,10 +123,9 @@ public:
         Scalar color = Scalar( 255, 255, 255 );
         drawContours( drawing, contours, maxAreaIdx, color, 2, 8, hierarchy, 0, Point() );
         
+        for(int i = 0; i<contours[maxAreaIdx].size(); i++)
+            MyFilledCircle(drawing, contours[maxAreaIdx][i]) ;
         
-        
-        
-        //    cout <<  contours[maxAreaIdx];
         
         return drawing.clone();
     }

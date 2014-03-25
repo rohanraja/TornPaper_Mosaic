@@ -17,7 +17,7 @@ void MyFilledCircle( Mat img, Point center, int bl = 0 )
     int lineType = 8;
     
     circle( img,
-           center,5,
+           center,1,
            Scalar( bl, 0, 255 ),
            thickness,
            lineType );
