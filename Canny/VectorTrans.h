@@ -575,7 +575,7 @@ public:
         
         int the_idx_in_NCanny = MB3.getNormfromFULL(rough_starting_point[0].first, rough_starting_point[0].second);
         
-        vector<Point> tttttt = MB3.getNonCannY() ;
+        vector<Point> tttttt = MB3.contours[MB3.maxAreaIdx] ;
         
         MyFilledCircle(tmp, tttttt[the_idx_in_NCanny], 240);
         MyFilledCircle(tmp, tttttt[the_idx_in_NCanny + MB3.length_of_candidate_points], 240);

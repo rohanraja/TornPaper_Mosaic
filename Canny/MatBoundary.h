@@ -465,11 +465,11 @@ public:
     
     int getNormfromFULL(Point &p1, Point &p2)
     {
-        int idx1 = findIdexofNearestCNT(p1);
-        int idx2 = findIdexofNearestCNT(p2);
+        int idx1 = findFROM_NC_TO_C(p1);
+        int idx2 = findFROM_NC_TO_C(p2);
         
         
-        vector<Point> NC = getNonCannY() ;
+        vector<Point> NC = contours[maxAreaIdx];
         
         int d1 = abs(idx2-idx1);
         
@@ -502,11 +502,11 @@ public:
     {
         Feature_vector fb ;
         
-        int idx1 = findIdexofNearestCNT(p1);
-        int idx2 = findIdexofNearestCNT(p2);
+        int idx1 = findFROM_NC_TO_C(p1);
+        int idx2 = findFROM_NC_TO_C(p2);
         
         
-        vector<Point> NC = getNonCannY() ;
+        vector<Point> NC = contours[maxAreaIdx];
         
         int d1 = abs(idx2-idx1);
         
