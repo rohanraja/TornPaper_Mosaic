@@ -209,6 +209,44 @@ public:
 	Edge_Envelope(vector<feature> f , vector<feature> b, Point S , Point E );
 	Edge_Envelope();
 	double deviation(double);
+    
+    int getMaxNorm(double dparam)
+    {
+        double sum = 0,count = 0, maxdist = 0;
+        int max_idx = 0;
+        
+        for(int i = 0; i < (int)forward.size(); i++)
+        {
+            feature e = forward[i];
+            if(forward[i].distance > maxdist)
+            {
+                maxdist = forward[i].distance ;
+                max_idx = i;
+            }
+        }
+        
+        return max_idx ;
+    
+    }
+    
+    double getMaxNormLENGTH()
+    {
+        double sum = 0,count = 0, maxdist = 0;
+        int max_idx = 0;
+        
+        for(int i = 0; i < (int)forward.size(); i++)
+        {
+            feature e = forward[i];
+            if(forward[i].distance > maxdist)
+            {
+                maxdist = forward[i].distance ;
+                max_idx = i;
+            }
+        }
+        
+        return maxdist ;
+        
+    }
 };
 
 class Feature_vector{

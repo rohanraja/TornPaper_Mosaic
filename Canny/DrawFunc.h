@@ -47,3 +47,19 @@ Mat DisplayText( Mat image, char * str, Point &org)
     
     return image;
 }
+
+
+int calcIntfor(Mat &image1)
+{
+    int basescore = 0;
+    
+    for (int i=0; i < image1.rows; i++) {
+        for (int j=0; j < image1.cols; j++) {
+            Vec3b intensity = image1.at<Vec3b>(i,j);
+            basescore+= intensity[0] + intensity[1] + intensity[2];
+        }
+        
+    }
+    
+    return basescore;
+}

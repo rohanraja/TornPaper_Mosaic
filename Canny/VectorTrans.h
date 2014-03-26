@@ -522,15 +522,14 @@ public:
         resize(src2, src2, Size(), scaleFactor, scaleFactor, INTER_CUBIC);
         main2 = src2.clone();
         MB2 = *new MatBoundary(src2) ;
-        namedWindow( "final122", CV_WINDOW_AUTOSIZE );
+        namedWindow( "SHOWING ROUGH EDGES", CV_WINDOW_AUTOSIZE );
         
         
         
         Mat tmp = MB2.getBoundary();
         
-        vector<Point> vvvpp = MB2.getPolyAPprox("MB2CONTTTTT");
         
-        MB2.checkforNonLinear(vvvpp[0],vvvpp[1]);
+        
         
 //        edpair edd = MB2.getNonLinearEdges();
 //        
@@ -556,14 +555,31 @@ public:
         
         MB2.getCorners(3);
         
+        
+        
         src3 = imread( m3src, 1 );
         resize(src3, src3, Size(), scaleFactor, scaleFactor, INTER_CUBIC);
         main3 = src3.clone();
         MB3 = *new MatBoundary(src3) ;
-        MB3.getBoundary();
+        tmp = MB3.getBoundary();
         MB3.getCorners(3);
         
      //  MB3.getNonLinearEdges();
+        
+        vector<pair<Point,Point> > rough_starting_point = MB3.getRoughedges() ;
+        
+        for(int i = 0; i<rough_starting_point.size() ; i++)
+        {
+            line(tmp, rough_starting_point[i].first, rough_starting_point[i].second, Scalar(255,255,255), 3);
+        }
+        
+        int the_idx_in_NCanny = MB3.getNormfromFULL(rough_starting_point[0].first, rough_starting_point[0].second);
+        
+        vector<Point> tttttt = MB3.getNonCannY() ;
+        
+        MyFilledCircle(tmp, tttttt[the_idx_in_NCanny], 240);
+        MyFilledCircle(tmp, tttttt[the_idx_in_NCanny + MB3.length_of_candidate_points], 240);
+        imshow( "SHOWING ROUGH EDGES", tmp );
         
                 
     }

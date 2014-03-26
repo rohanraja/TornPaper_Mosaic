@@ -331,13 +331,13 @@ public:
     
     int findIdexofNearestCNT(Point &p)
     {
-        
+         vector<Point> NC = getNonCannY() ;
         int idx = 0;
         double minlength = INT_MAX, len;
         
-        for (int i =0; i<contours[maxAreaIdx].size(); i++) {
+        for (int i =0; i<NC.size(); i++) {
             
-            len = norm(p - contours[maxAreaIdx][i]);
+            len = norm(p - NC[i]);
             
                 if (len < minlength) {
                     idx = i ;
@@ -349,15 +349,42 @@ public:
         
     }
     
-    void checkforNonLinear(Point &p1, Point &p2)
+    int findFROM_NC_TO_C(Point &p)
+    {
+        vector<Point> NC = contours[maxAreaIdx] ;
+        int idx = 0;
+        double minlength = INT_MAX, len;
+        
+        for (int i =0; i<NC.size(); i++) {
+            
+            len = norm(p - NC[i]);
+            
+            if (len < minlength) {
+                idx = i ;
+                minlength = len;
+            }
+        }
+        
+        return idx;
+        
+    }
+    
+    int checkforNonLinear(Point &p1, Point &p2)
     {
         int idx1 = findIdexofNearestCNT(p1);
         int idx2 = findIdexofNearestCNT(p2);
         
-        cout << idx1-idx2;
         
-
-        newVector nv(idx1-idx2, contours[maxAreaIdx], idx1, "NONLCHECK");
+        vector<Point> NC = getNonCannY() ;
+        
+        int d1 = abs(idx2-idx1);
+        
+        if(idx1 > idx2)
+            d1 = NC.size() - idx1 + idx2 ;
+        
+        
+        newVector nv(d1, NC, idx1, "NONLCHECK");
+        
         
         Point maxC = nv.getMaxCoord();
         Point minC = nv.getMinCoord();
@@ -365,15 +392,22 @@ public:
         
         nv.translate_to_point(minC - Point(15,15));
         
-        Mat image1 = nv.plotPoints(1,diffC.x, diffC.y) ;
+        Mat image1 = nv.plotPoints(5,diffC.x, diffC.y) ;
         
         namedWindow("NLL1", CV_WINDOW_AUTOSIZE );
 
         imshow( "NLL1", image1 );
 
         vector<Point> vpp;
-        vpp.push_back(contours[maxAreaIdx][idx1]) ;
-        vpp.push_back(contours[maxAreaIdx][idx2]) ;
+        vpp.push_back(NC[idx1]) ;
+        vpp.push_back(NC[idx2]) ;
+        
+        //vpp.push_back(p1) ;
+        //vpp.push_back(p2) ;
+        
+        cout << "\nYYRRRR " << p1 << "  dsfdfs" << p2 <<endl ;
+        cout << "\nYYRRRR " << nv.pts[0] - minC + Point(15,15) << "  dsfdfs" << nv.pts[nv.num - 1] - minC + Point(15,15) <<endl ;
+        
         
         newVector nv2(2, vpp, 0, "NONLCHECK");
         
@@ -383,8 +417,113 @@ public:
         
         namedWindow("NLL2", CV_WINDOW_AUTOSIZE );
         
-        imshow( "NLL2", image2 );
+        int basescore = calcIntfor(image2) ; //0;
+    
+        
+         Mat diff = image2 - image1  ;
+
+        int score = calcIntfor(diff) ;
+
+        
+        Point ppp(20,20) ;
+      //  String txt = to_string(100 - ((100*score)/basescore));
+        String txt = to_string(((100*score)/basescore));
+
+        char str[80];
+        strcpy(str, txt.c_str());
+        
+        DisplayText(diff, str, ppp);
+        
+        imshow( "DIFF LAPP",diff);
+        
+        return ((100*score)/basescore);
         
     }
+    
+    int thresh_match = 65 ;
+    
+    vector<pair<Point,Point> > getRoughedges()
+    {
+        vector<Point> vvvpp = getPolyAPprox();
+        
+        
+        vector<pair<Point,Point> > rough_starting_point ;
+        
+        for(int j = 0 ; j < vvvpp.size(); j++ )
+        {
+            int curscore = checkforNonLinear(vvvpp[j],vvvpp[(j+1)%vvvpp.size()]);
+            cout << "\n SCOREEEE = " << curscore ;
+            if(curscore > thresh_match)
+                rough_starting_point.push_back(make_pair(vvvpp[j],vvvpp[(j+1)%vvvpp.size()]));
+            
+        }
+        
+        return rough_starting_point ;
+    }
+    
+    int length_of_candidate_points = 100;
+    
+    int getNormfromFULL(Point &p1, Point &p2)
+    {
+        int idx1 = findIdexofNearestCNT(p1);
+        int idx2 = findIdexofNearestCNT(p2);
+        
+        
+        vector<Point> NC = getNonCannY() ;
+        
+        int d1 = abs(idx2-idx1);
+        
+        if(idx1 > idx2)
+            d1 = NC.size() - idx1 + idx2 ;
+        
+        newVector nv(d1, NC, idx1, "NONLCHECK");
+        double tmpdist, maxdist = 0;
+        int max_idx = 0;
+        
+        for(int i =0; i< nv.pts.size() - length_of_candidate_points ; i = i + nv.pts.size()/length_of_candidate_points)
+        {
+            newVector nv2(length_of_candidate_points, nv.pts, i, "NONLCHECK");
+            
+            tmpdist = getMaxNormfromEdge(nv2.pts[0], nv2.pts[nv2.pts.size()-1]);
+            
+            if(tmpdist > maxdist)
+            {
+                maxdist = tmpdist;
+                max_idx = i;
+            }
+        }
+        
+        return (max_idx+idx1)%NC.size() ;
+        
+        
+    }
+    
+    double getMaxNormfromEdge(Point &p1, Point &p2)
+    {
+        Feature_vector fb ;
+        
+        int idx1 = findIdexofNearestCNT(p1);
+        int idx2 = findIdexofNearestCNT(p2);
+        
+        
+        vector<Point> NC = getNonCannY() ;
+        
+        int d1 = abs(idx2-idx1);
+        
+        if(idx1 > idx2)
+            d1 = NC.size() - idx1 + idx2 ;
+        
+        newVector nv(d1, NC, idx1, "NONLCHECK");
+        
+        Edge_Envelope ee=  fb.fb_envelope(nv.pts);
+        
+        int idx = (ee.getMaxNorm(0)+idx1) % NC.size() ;
+        
+        return ee.getMaxNormLENGTH() ;
+        
+        //ee.
+        
+    }
+    
     
 };
