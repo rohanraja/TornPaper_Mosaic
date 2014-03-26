@@ -1,11 +1,12 @@
 // Created by Rohan Raja
 
 #include "DrawFunc.h"
+#include "NewCorner.h"
 #include "MatBoundary.h"
 #include "NewVector.h"
 #include "RepositionTwoIm.h"
 #include "VectorTrans.h"
-#include "NewCorner.h"
+
 
 
 #define PI 3.14159265
@@ -31,26 +32,28 @@ int main( int argc, char** argv )
     /// Load source image and convert it to gray
     Mat src = imread( "/Users/rohanraja/Documents/Rails_Projects/Opensoft/santosh_kumar/bin/other files/Image003.jpg" , 1 );
     
-    resize(src, src, Size(), 0.3, 0.3, INTER_CUBIC);
-    
-    mb = *new MatBoundary(src) ;
-
-    drawing = mb.getBoundary();
-    
-    drawing = mb.getCorners(3);
-
-    drawing2 = drawing;
-    
-    src = imread( "/Users/rohanraja/Documents/Rails_Projects/Opensoft/santosh_kumar/bin/other files/Image001.jpg" , 1 );
-    resize(src, src, Size(), 0.3, 0.3, INTER_CUBIC);
-    
-     mb2 = *new MatBoundary(src) ;
-    
-    Mat dr2 = mb2.getBoundary();
+//    resize(src, src, Size(), 0.3, 0.3, INTER_CUBIC);
+//    
+//    mb = *new MatBoundary(src) ;
+//
+//    drawing = mb.getBoundary();
+//    
+//    drawing = mb.getCorners(3);
+//
+//    drawing2 = drawing;
+//    
+//    src = imread( "/Users/rohanraja/Documents/Rails_Projects/Opensoft/santosh_kumar/bin/other files/Image001.jpg" , 1 );
+//    resize(src, src, Size(), 0.3, 0.3, INTER_CUBIC);
+//    
+//     mb2 = *new MatBoundary(src) ;
+//    
+//    Mat dr2 = mb2.getBoundary();
     
   //  dr2 = mb2.getCorners(3);
     
     CompareTwo cmp("/Users/rohanraja/Documents/Rails_Projects/Opensoft/santosh_kumar/bin/other files/Image003.jpg", "/Users/rohanraja/Documents/Rails_Projects/Opensoft/santosh_kumar/bin/other files/Image001.jpg", "/Users/rohanraja/Documents/Rails_Projects/Opensoft/santosh_kumar/bin/other files/Image002.jpg");
+    
+  //  CompareTwo cmp("/Users/rohanraja/Downloads/resources/Image005.jpg", "/Users/rohanraja/Downloads/resources/Image006.jpg", "/Users/rohanraja/Documents/Rails_Projects/Opensoft/santosh_kumar/bin/other files/Image002.jpg");
     
     cmp.findMostSimilar();
     
@@ -68,7 +71,7 @@ int main( int argc, char** argv )
     
   //  vtt.findMostSimilar();
     
-      createTrackbar( "TKBAR", source_window, &thresh, mb.contours[mb.maxAreaIdx].size(), thresh_callback );
+ //     createTrackbar( "TKBAR", source_window, &thresh, mb.contours[mb.maxAreaIdx].size(), thresh_callback );
    // thresh_callback(0,0);
    
 

@@ -6,14 +6,16 @@ public:
     {
     //    addImages();
      //   showImages();
+        
+        
     }
     
-    void addImages(Point &p , Point &cnt_for_rot, float angleofrot)
+    Mat addImages(Point &p , Point &cnt_for_rot, float angleofrot)
     {
         final1 = Mat::zeros( 2000, 2000, m1.type() );
         final2 = Mat::zeros( 2000,2000, m2.type() );
         
-        int pad = 60 ;
+        int pad = 50 ;
         
        
 
@@ -32,14 +34,18 @@ public:
 //        final1 = out ;
         
       //  Point p(109,-429);
+        
         final1 = translateImg(final1, p);
         
         Mat warp_mat = getRotationMatrix2D( Point(cnt_for_rot.x+pad, cnt_for_rot.y + pad ), angleofrot, 1 );
+        
         warpAffine( final1, final1, warp_mat, final1.size() );
 
     //    resize(m1, final1, final1.size());
      //   resize(m2, final2, final2.size());
+        Mat added = final1 + final2;
         
+        return added;
         
     }
     
@@ -55,7 +61,9 @@ public:
         
         namedWindow( "finalAdded", CV_WINDOW_AUTOSIZE );
         
-        imshow( "finalAdded", final1 +  final2 );
+        Mat added = final1 + final2;
+        
+        imshow( "finalAdded", added );
         
     }
     

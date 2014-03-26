@@ -3,17 +3,26 @@ class Edge{
 public:
     vector<Point> segment;
     int edgeid;
-    //		int start;			// Start index of edge in counter-clockwise sense in boundary
-    //		int end;			// End index of edge in counter-clockwise sense in boundary
+  
+    		int start;			// Start index of edge in counter-clockwise sense in boundary
+    		int end;			// End index of edge in counter-clockwise sense in boundary
     //		Edge(int i,int j);
-    Edge(vector<Point> p);
+    
+    Edge(vector<Point> p, int i = 0 , int j = 0)
+    {
+        segment = p;
+        edgeid = -1;
+        start = (i);
+        end = (j);
+        
+    }
 };
 
 
 class Polygon_corner {
 public:
     double get_val(int ind1 , int ind2,Point point_bef, Point point_after,vector <Point> points);
-    vector<Edge> corner_points(vector<Point> points , double epsilon, Mat image, string f_name);
+    vector<Edge> corner_points(vector<Point> points , double epsilon, Mat image);
     vector<Point> RamerDouglasPeuckerAlgo( vector<Point> points , double epsilon );
     double shortestDistanceToSegment(Point C, Point A, Point B);
     double Dist( Point A, Point B);
@@ -30,10 +39,7 @@ public:
  };
  */
 
-Edge::Edge(vector<Point> p){
-	segment = p;
-	edgeid = -1;
-}
+
 //	public static void main( String [] args ){
 //
 //		Scanner stdin = new Scanner(System.in);
@@ -114,7 +120,7 @@ vector<Point> Polygon_corner::RamerDouglasPeuckerAlgo( vector<Point> points , do
 }
 
 
-vector<Edge> Polygon_corner::corner_points(vector<Point> points , double epsilon, Mat image, string f_name){
+vector<Edge> Polygon_corner::corner_points(vector<Point> points , double epsilon, Mat image){
     
 	vector<Point> reducedPoints = RamerDouglasPeuckerAlgo(points,epsilon);
 	int xcoord, ycoord, i, j;
@@ -140,11 +146,12 @@ vector<Edge> Polygon_corner::corner_points(vector<Point> points , double epsilon
 				image.at<Vec3b>(j, i)[2] = 0;
 			}
 	}
-	imwrite( "./src/"+f_name+".jpg", image );
+//	imwrite( "./src/"+f_name+".jpg", image );
     
 	vector<Edge> Edges;
 	vector<Point> p;
 	int rpindex = 0;					// index of Reduced point vector
+    
 	for(int i = 0; i < (int)points.size(); i++)
 	{
 		if(points[i].x == reducedPoints[rpindex].x && points[i].y == reducedPoints[rpindex].y)
@@ -171,17 +178,173 @@ vector<Edge> Polygon_corner::corner_points(vector<Point> points , double epsilon
 		Edge edge(p);
 		Edges.push_back(edge);
 	}
-	FILE *fp;
-	fp = fopen("./src/out_edge.txt","w");
-	for(int i = 0; i < (int)Edges.size(); i++)
-	{
-		for(int j = 0; j < (int)Edges[i].segment.size(); j++)
-		{
-			fprintf(fp, "%d %d\n", Edges[i].segment[j].x, Edges[i].segment[j].y);
-		}
-		fprintf(fp, "\n\n");
-	}
-	fclose(fp);
+//	FILE *fp;
+//	fp = fopen("/Users/rohanraja/Downloads/out_edge.txt","w");
+//	for(int i = 0; i < (int)Edges.size(); i++)
+//	{
+//		for(int j = 0; j < (int)Edges[i].segment.size(); j++)
+//		{
+//			fprintf(fp, "%d %d\n", Edges[i].segment[j].x, Edges[i].segment[j].y);
+//		}
+//		fprintf(fp, "\n\n");
+//	}
+//	fclose(fp);
 	return Edges;
 }
 
+
+
+
+class feature{
+public:
+    double angle;
+    double distance;
+    feature(double a, double d);
+};
+
+class Edge_Envelope{
+public:
+	vector<feature> forward, backward;
+	Point fStart,fEnd ;
+	Edge_Envelope(vector<feature> f , vector<feature> b, Point S , Point E );
+	Edge_Envelope();
+	double deviation(double);
+};
+
+class Feature_vector{
+public:
+    
+	vector<feature> calculate(vector <Point> list);
+	Edge_Envelope fb_envelope(vector<Point> list);
+	vector<Point> reverse(vector<Point> l);
+    
+};
+
+
+feature::feature(double a, double d){
+	angle = a;
+	distance = d;
+}
+
+
+/*class Edge_Envelope{
+ //	ArrayList<feature> edges = new ArrayList<feature>();
+ vector<feature> edges;
+ Point Start,End ;
+ Edge_Envelope(vector<feature> edge , Point S , Point E );
+ };*/
+
+Edge_Envelope::Edge_Envelope(vector<feature> f ,vector<feature> b, Point S , Point E ){
+	forward = f; backward = b ; fStart = S ; fEnd = E;
+}
+
+double Edge_Envelope::deviation(double dparam)
+{
+	double sum = 0,count = 0;
+	for(int i = 0; i < (int)forward.size(); i++)
+	{
+		feature e = forward[i];
+		if(forward[i].distance > dparam)
+			count++;
+		sum += (e.distance * e.distance * e.distance);
+	}
+    
+	float stlength = norm(fStart - fEnd);
+    
+	sum = count/forward.size();
+    
+    if(stlength < 60)
+        sum = 0;
+	return sum;
+}
+/*class Feature_vector{
+ public:
+ Edge_Envelope calculate(vector<Point> list );
+ };
+ */
+vector<Point> Feature_vector::reverse(vector<Point> l){
+	vector<Point> rev;
+	//cout << l.size() << endl;
+	for(int i = (int)l.size()-1; i >= 0; i--){
+		rev.push_back(l[i]);
+	}
+	return rev;
+}
+
+Edge_Envelope Feature_vector::fb_envelope(vector<Point> list){
+    
+	vector<feature> f = calculate(list);
+	vector<feature> b = calculate(reverse(list));
+	Edge_Envelope envelope(f,b,list[0],list[list.size()-1]);
+    //	cout << "Start " << list[0] << " End " << list[list.size()-1] << " Deviation " << envelope.deviation() << endl;
+	return envelope;
+}
+
+vector<feature> Feature_vector::calculate(vector <Point> list ){
+	double m_initial,ang_initial,m_temp,ang_temp;
+	int size = list.size();
+	double d;
+	vector<feature> Cedges;
+    
+	if( list[0].x != list[size - 1].x ){
+		m_initial = (list[0].y - list[size - 1].y)/(double)(list[0].x - list[size - 1].x);
+		ang_initial = atan(m_initial);
+		if(ang_initial < 0) ang_initial += M_PI;
+	}
+	else ang_initial = M_PI/2 ;
+    
+	for(int i = 1; i< (int)list.size() - 1 ; i++){
+		if( list.at(0).x !=  list.at(i).x){
+			m_temp = (list.at(0).y - list.at(i).y)/(double)(list.at(0).x - list.at(i).x);
+			ang_temp = atan(m_temp);
+			if(ang_temp < 0) ang_temp += M_PI;
+		}
+		else
+			ang_temp =  M_PI/2 ;
+		d = sqrt(pow((list.at(i).y - list.at(0).y),2) + pow((list.at(i).x - list.at(0).x),2) );
+		d = abs(d * sin(ang_initial - ang_temp));
+		feature tedge (ang_initial - ang_temp, d);
+		Cedges.push_back(tedge);
+	}
+	return Cedges;
+}
+
+// Input contour + Name of contour file
+// Add the files for Polygon_corner.cpp , Feature_vector.cpp
+
+struct edpair
+{
+    vector<pair<Point,Point> > vp;
+    vector<double> dev ;
+    vector<Point> startIDXs;
+};
+
+edpair getnonlinearedgeendpt(vector<Point> c,Mat image){
+	edpair nonlinearedges;
+    Polygon_corner pc;
+	Feature_vector fv;
+	vector<Edge> Edges;
+    
+	
+//
+//    
+//
+//	// change the two parameters as per ur requirement
+	double epsilon = 150 ;
+    double dparam = 2;
+	double max_div = 0.55; //( < 1)
+	Edges = pc.corner_points(c, epsilon, image);
+    
+    
+	for(int j = 0; j < (int)Edges.size(); j++){
+//		//cout << " 1: " << index1 << " 2: " << index2 <<  "11::" << c.boundary[index1] << "2::" << c.boundary[index2] << endl;
+		Edge_Envelope envelope = fv.fb_envelope(Edges[j].segment);
+		double deviation = envelope.deviation(dparam);
+		cout << "deviation : " << deviation << endl;
+		if(deviation > max_div || 1) {
+			nonlinearedges.vp.push_back(make_pair(Edges[j].segment.at(0),Edges[j].segment.at(Edges[j].segment.size() - 1)));
+            nonlinearedges.dev.push_back(deviation); // = deviation;
+		}
+	}
+	return nonlinearedges;
+}

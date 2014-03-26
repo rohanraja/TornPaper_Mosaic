@@ -17,8 +17,8 @@ void MyFilledCircle( Mat img, Point center, int bl = 0 )
     int lineType = 8;
     
     circle( img,
-           center,1,
-           Scalar( bl, 0, 255 ),
+           center,3,
+           Scalar( bl, 0, 155 ),
            thickness,
            lineType );
 }
@@ -40,7 +40,7 @@ Mat DisplayText( Mat image, char * str, Point &org)
     
     
     putText( image, str, org, CV_FONT_HERSHEY_COMPLEX, 0.6,
-            Scalar(255,255, 255), 1, lineType );
+            Scalar(0,0, 255), 1, lineType );
     
     
     //  }

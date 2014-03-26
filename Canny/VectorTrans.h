@@ -292,7 +292,7 @@ public:
         return score;
     }
     
-    int sim_order = 1 ;
+    int sim_order = 10 ;
     
     int findMostSimilar(int st = 0, int len = 10, vector<Point> &countt = *new vector<Point> )
     {
@@ -547,30 +547,94 @@ public:
     
     CompareTwo(char * m1src, char * m2src,  char * m3src)
     {
+        float scaleFactor = 0.3;
         src1 = imread( m1src, 1 );
-        resize(src1, src1, Size(), 0.3, 0.3, INTER_CUBIC);
+        resize(src1, src1, Size(), scaleFactor, scaleFactor, INTER_CUBIC);
         main1 = src1.clone();
         MB1 = *new MatBoundary(src1) ;
-        src1 = MB1.getBoundary();
+        namedWindow( "final1223", CV_WINDOW_AUTOSIZE );
+        
+        
+        Mat tmp2 = MB1.getBoundary();
+        
+        MB1.getPolyAPprox("MB1CONTTTTT");
+        
+//        edpair ed2 = MB1.getNonLinearEdges();
+//        
+//        for (int i=0; i<ed2.vp.size(); i++) {
+//            cout <<"\n*****" << ed2.vp[i].first  << " , ***" << ed2.vp[i].second << "\n";
+//            MyFilledCircle(tmp2, ed2.vp[i].first, 200);
+//            MyFilledCircle(tmp2, ed2.vp[i].second, 205);
+//            line(tmp2, ed2.vp[i].first, ed2.vp[i].second, Scalar(255,255,255), 3);
+//            
+//            Point ppp =  0.5 * (ed2.vp[i].first + ed2.vp[i].second) ;
+//            String txt = to_string(ed2.dev[i]);
+//            char str[80];
+//            strcpy(str, txt.c_str());
+//            
+//            DisplayText(tmp2, str, ppp);
+//            
+//        }
+//        
+//        Point ppp(20,20) ;
+//        String txt = to_string(ed2.vp.size());
+//        char str[80];
+//        strcpy(str, txt.c_str());
+//        
+//        DisplayText(tmp2, str, ppp);
+//        
+//        imshow( "final1223", tmp2 );
+        src1 = tmp2.clone();
+        
         Mat test = MB1.getCorners(3);
         
-        namedWindow( "TEST CORNERS", CV_WINDOW_AUTOSIZE );
-        imshow("TEST CORNERS", test);
+        
         
         
         src2 = imread( m2src, 1 );
-        resize(src2, src2, Size(), 0.3, 0.3, INTER_CUBIC);
+        resize(src2, src2, Size(), scaleFactor, scaleFactor, INTER_CUBIC);
         main2 = src2.clone();
         MB2 = *new MatBoundary(src2) ;
-        src2 = MB2.getBoundary();
+        namedWindow( "final122", CV_WINDOW_AUTOSIZE );
+        
+        
+        
+        Mat tmp = MB2.getBoundary();
+        
+        MB2.getPolyAPprox("MB2CONTTTTT");
+        
+//        edpair edd = MB2.getNonLinearEdges();
+//        
+//        vector<pair<Point, Point>> ed = edd.vp ;
+//        
+//        for (int i=0; i<ed.size(); i++) {
+//            cout <<"\n*****" << ed[i].first  << " , ***" << ed[i].second << "\n";
+//            MyFilledCircle(tmp, ed[i].first, 200);
+//            MyFilledCircle(tmp, ed[i].second, 200);
+//            line(tmp, ed[i].first, ed[i].second, Scalar(255,255,255), 3);
+//            Point ppp =  0.5 * (ed[i].first + ed[i].second) ;
+//            String txt = to_string(edd.dev[i]);
+//            char str[80];
+//            strcpy(str, txt.c_str());
+//            
+//            DisplayText(tmp, str, ppp);
+//            
+//        }
+        
+        
+      //  imshow( "final122", tmp );
+        src2 = tmp.clone();
+        
         MB2.getCorners(3);
         
         src3 = imread( m3src, 1 );
-        resize(src3, src3, Size(), 0.3, 0.3, INTER_CUBIC);
+        resize(src3, src3, Size(), scaleFactor, scaleFactor, INTER_CUBIC);
         main3 = src3.clone();
         MB3 = *new MatBoundary(src3) ;
         MB3.getBoundary();
         MB3.getCorners(3);
+        
+     //  MB3.getNonLinearEdges();
         
                 
     }
@@ -610,8 +674,9 @@ public:
         
         p = MB1.contours[MB1.maxAreaIdx][vtt.opti_start_idx] - cnt_for_rot ;
         
+        
         RepositionTwoIm rp(src1, src2);
-        rp.addImages(p,cnt_for_rot , vtt.angle_of_rot);
+        Mat frst = rp.addImages(p,cnt_for_rot , vtt.angle_of_rot);
         rp.showImages();
                 
 //        for(int i = 255; 330 - 30; i++)
@@ -621,5 +686,13 @@ public:
 //            vtt.findMostSimilar(i,15,MB1);
 //            waitKey(100);
 //        }
+    }
+    
+    
+    void matchTheTwo()
+    {
+        
+        edpair edd = MB2.getNonLinearEdges();
+        
     }
 };
