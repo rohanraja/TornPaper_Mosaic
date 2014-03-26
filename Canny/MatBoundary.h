@@ -1,3 +1,5 @@
+
+
 class MatBoundary
 {
     
@@ -50,6 +52,8 @@ public:
             }
         }
         
+        
+        
         int param = 0;
         nmat = Mat::zeros( rows+2*param,cols+2*param, CV_8UC1 );
         for(int i = 0;i<rows+2*param;i++){
@@ -84,11 +88,19 @@ public:
         
         threshold(nmat, mat1,lowerb,255,THRESH_BINARY_INV);
         threshold(nmat, mat2,upperb,255,THRESH_BINARY);
+        
         max(mat1, mat2, nmat);
+        
+        
+        
         
         medianBlur(nmat, nmat, 9);
         Mat kernel = Mat::ones(10, 5, CV_8UC1) ;
         morphologyEx(nmat, nmat, MORPH_OPEN, kernel);
+        
+        
+        
+        
         
     }
     
@@ -101,6 +113,8 @@ public:
         Mat drawing2;
         
         doHistogram();
+
+        
         doThreashold();
         
         Mat canny_output;
@@ -108,6 +122,8 @@ public:
         
         /// Detect edges using canny
         Canny( nmat, canny_output, thresh, thresh*2, 3);
+        
+      
         /// Find contours
         
      //   canny_output = nmat.clone();
@@ -156,7 +172,7 @@ public:
         Mat crop(drawing2.rows, drawing2.cols, CV_8UC3);
         
         // set background to green
-        crop.setTo(Scalar(0,0,0));
+        crop.setTo(Scalar(0,255,0));
         
         // and copy the magic apple
         src.copyTo(crop, drawing2);
@@ -271,7 +287,7 @@ public:
         
     }
     
-    void getPolyAPprox(string imgname = "INSIDEFUNC" )
+    vector<Point> getPolyAPprox(string imgname = "INSIDEFUNC" )
     {
         vector<Point> NC = getNonCannY();
         
@@ -303,45 +319,13 @@ public:
             DisplayText(tmp2, str, ppp);
             
         }
+        double scaleFactor = 0.5;
+        resize(tmp2, tmp2, Size(), scaleFactor, scaleFactor, INTER_CUBIC);
         
         namedWindow( imgname, CV_WINDOW_AUTOSIZE );
         imshow( imgname, tmp2 );
-    }
-    
-    edpair getNonLinearEdges()
-    {
-        edpair ed2 = getnonlinearedgeendpt(contours[maxAreaIdx],src) ;
-    //    edpair ed2 = getnonlinearedgeendpt(getNonCannY() src) ;
-        Mat tmp2 = getBoundary();
         
-        for (int i=0; i<ed2.vp.size(); i++) {
-            cout <<"\n*****" << ed2.vp[i].first  << " , ***" << ed2.vp[i].second << "\n";
-            MyFilledCircle(tmp2, ed2.vp[i].first, 200);
-            MyFilledCircle(tmp2, ed2.vp[i].second, 205);
-            line(tmp2, ed2.vp[i].first, ed2.vp[i].second, Scalar(255,255,255), 3);
-            
-            Point ppp =  0.5 * (ed2.vp[i].first + ed2.vp[i].second) ;
-            String txt = to_string(ed2.dev[i]);
-            char str[80];
-            strcpy(str, txt.c_str());
-            
-            DisplayText(tmp2, str, ppp);
-            
-        }
-        
-        Point ppp(20,20) ;
-        String txt = to_string(ed2.vp.size());
-        char str[80];
-        strcpy(str, txt.c_str());
-        
-        DisplayText(tmp2, str, ppp);
-        
-        namedWindow( "INSIDEFUNC", CV_WINDOW_AUTOSIZE );
-         imshow( "INSIDEFUNC", tmp2 );
-        
-        return ed2 ;
-        
-        
+        return contours_poly;
     }
     
     
@@ -362,6 +346,44 @@ public:
         }
             
             return idx;
+        
+    }
+    
+    void checkforNonLinear(Point &p1, Point &p2)
+    {
+        int idx1 = findIdexofNearestCNT(p1);
+        int idx2 = findIdexofNearestCNT(p2);
+        
+        cout << idx1-idx2;
+        
+
+        newVector nv(idx1-idx2, contours[maxAreaIdx], idx1, "NONLCHECK");
+        
+        Point maxC = nv.getMaxCoord();
+        Point minC = nv.getMinCoord();
+        Point diffC = maxC - minC ;
+        
+        nv.translate_to_point(minC - Point(15,15));
+        
+        Mat image1 = nv.plotPoints(1,diffC.x, diffC.y) ;
+        
+        namedWindow("NLL1", CV_WINDOW_AUTOSIZE );
+
+        imshow( "NLL1", image1 );
+
+        vector<Point> vpp;
+        vpp.push_back(contours[maxAreaIdx][idx1]) ;
+        vpp.push_back(contours[maxAreaIdx][idx2]) ;
+        
+        newVector nv2(2, vpp, 0, "NONLCHECK");
+        
+        nv2.translate_to_point(minC - Point(15,15));
+        
+        Mat image2 = nv2.plotPoints(1,diffC.x, diffC.y) ;
+        
+        namedWindow("NLL2", CV_WINDOW_AUTOSIZE );
+        
+        imshow( "NLL2", image2 );
         
     }
     

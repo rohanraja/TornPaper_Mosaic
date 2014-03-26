@@ -75,19 +75,9 @@ public:
         // v2.printAll();
         m2 = v2.plotPoints();
         
-        solve();
         
     }
-    
-    VectTrans(MatBoundary &mB1 , MatBoundary &mB2, int psize)
-    {
-        a = *new newVector(30,mB1.contours[mB1.maxAreaIdx],psize, "plot1", mB1);
-        b = *new newVector(35,mB2.corners,mB2.corners.size()/2 -15, "plot2", mB2);
-        m1 = a.plotPoints() ;
-        m2 = b.plotPoints() ;
-        
-        //   solve();
-    }
+  
     
     
     int m2score = 0;
@@ -227,70 +217,7 @@ public:
         
     }
     
-    int solve(int iscnt = 1)
-    {
-        
-        
-        
-        float p2dist = norm(b.pts[0] - b.pts[b.num-1]) ;
-        int cnt_idx ;
-        
-        if (iscnt==1)
-            cnt_idx = b.num-1;
-        else
-            cnt_idx = 0;
-        
-        Point center = b.pts[cnt_idx];
-        Point endpt = b.pts[b.num-1 - cnt_idx];
-        
-        nv = *new newVector(a);
-        nv = a.getPoint_Dist(a.pts[0],p2dist) ;
-        
-        nv.translate_to_point(nv.pts[0] -1*center);
-        
-        Mat nvmat = nv.plotPoints(4);
-        
-        Point v11 = nv.pts[nv.num-1] - center ;
-        Point v22 = endpt - center ;
-        
-        float ss = v11.x*v22.x + v11.y*v22.y;
-        ss = ss / (norm(v11)*norm(v22)) ;
-        ss = acos(ss) ;
-        ss = (ss * 180) / PI ;
-        
-        warp_mat = getRotationMatrix2D( center, ss, 1 );
-        
-        Mat rotated = Mat::zeros( 1000, 1000, CV_8UC3 ); ;
-        
-        warpAffine( nvmat, rotated, warp_mat, nvmat.size() );
-        
-        Mat diff = m2 -rotated  ;
-        
-        int score = 0;
-        for (int i=0; i < diff.rows; i++) {
-            for (int j=0; j < diff.cols; j++) {
-                Vec3b intensity = diff.at<Vec3b>(i,j);
-                score+= intensity[0] + intensity[1] + intensity[2];
-            }
-            
-        }
-        
-        String strr = to_string(score);
-        char stt[80];
-        strcpy(stt, strr.c_str()) ;
-        Point org(50,50);
-        diff = DisplayText(diff,stt ,org );
-        
-        addWeighted(rotated, 1, m2, 1, 0, rotated);
-        
-        namedWindow( "Diff", CV_WINDOW_AUTOSIZE );
-        imshow( "Diff", diff );
-        
-        namedWindow( "Rotated", CV_WINDOW_AUTOSIZE );
-        imshow( "Rotated", rotated );
-        
-        return score;
-    }
+   
     
     int sim_order = 10 ;
     
@@ -298,7 +225,7 @@ public:
     {
         conts = countt;
         
-        b = *new newVector(len,MB2.corners,st, "Compare Case", MB2);
+        b = *new newVector(len,MB2.corners,st, "Compare Case");
         b.translate_to_point(b.pts[0] );
         
         maxC = b.getMaxCoord();
@@ -601,7 +528,9 @@ public:
         
         Mat tmp = MB2.getBoundary();
         
-        MB2.getPolyAPprox("MB2CONTTTTT");
+        vector<Point> vvvpp = MB2.getPolyAPprox("MB2CONTTTTT");
+        
+        MB2.checkforNonLinear(vvvpp[0],vvvpp[1]);
         
 //        edpair edd = MB2.getNonLinearEdges();
 //        
@@ -639,7 +568,7 @@ public:
                 
     }
     
-    void findMostSimilar(int stidx = 15, int numvecc = 15)
+    void findMostSimilar(int stidx = 32, int numvecc = 22)
     {
         // Take one sure part from P1, test for best match with all other parts
         
@@ -678,6 +607,33 @@ public:
         RepositionTwoIm rp(src1, src2);
         Mat frst = rp.addImages(p,cnt_for_rot , vtt.angle_of_rot);
         rp.showImages();
+        
+        frst.convertTo(frst, CV_8UC3);
+        
+       
+        
+        MatBoundary mbadded(frst);
+        
+        
+        Mat ttt = mbadded.getBoundary();
+        
+        
+        
+        mbadded.getPolyAPprox("FFFFFFADDDDDDDDD");
+        
+     //   namedWindow( "ADDEDREBOUND333", CV_WINDOW_AUTOSIZE );
+   //     imshow( "ADDEDREBOUND333", nmat);
+        
+        
+        
+        
+    //   Mat ttt =  mbadded.getCorners(3);
+        
+      //  namedWindow( "ADDEDREBOUND", CV_WINDOW_AUTOSIZE );
+       // imshow( "ADDEDREBOUND", ttt);
+        
+      //  mbadded.getPolyAPprox("ADDED APPROX");
+        
                 
 //        for(int i = 255; 330 - 30; i++)
 //        {
@@ -688,11 +644,5 @@ public:
 //        }
     }
     
-    
-    void matchTheTwo()
-    {
-        
-        edpair edd = MB2.getNonLinearEdges();
-        
-    }
+
 };

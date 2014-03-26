@@ -1,16 +1,16 @@
 
-class newVector : public MatBoundary
+class newVector 
 {
     
     char name[80];
 public:
     int num ;
     vector<Point> pts;
-    newVector(int n, vector<Point> & vp, int initial, char * nme, MatBoundary mm = *new MatBoundary() ) : pts(n), MatBoundary(mm)
+    newVector(int n, vector<Point> & vp, int initial, char * nme ) : pts(n)
     {
         num = n;
         for (int i=0; i<n; i++)
-            pts[i] = vp[initial+i];
+            pts[i] = vp[(initial+i)%vp.size()];
         
         strcpy(name, nme);
         
@@ -52,9 +52,6 @@ public:
     Mat plotPoints(int trans = 1, int x = 700, int y = 700 )
     {
        
-        vector<vector<Point> > contours(1);
-        contours[0] = pts;
-       // Mat drawing = Mat::zeros( maxC.y + 10,maxC.x + 10, CV_8UC3 );
         
          Mat drawing = Mat::zeros( y + 30, x +30, CV_8UC3 );
         
@@ -65,22 +62,6 @@ public:
             line( drawing,pts[i], pts[i+1], color, trans);
             
         }
-        
-        //        for (int i=0; i<num; i++) {
-        //
-        //            if (i==0) {
-        //                MyFilledCircle(drawing, pts[i], 255);
-        //            }
-        //            //    else
-        //            //      MyFilledCircle(drawing, pts[i]);
-        //
-        //        }
-        
-        
-        namedWindow( name, CV_WINDOW_AUTOSIZE );
-        imshow(name, drawing );
-        
-        
         
         return drawing;
     }
@@ -144,45 +125,7 @@ public:
     
     
     
-    newVector getPoint_Dist(Point &sp, float dist)
-    {
-        
-        vector<Point>  vp ;
-        
-        float tmpdist = -1;
-        int pnt = getIndexofPoint(sp);
-        int i = pnt;
-        
-        while (i < contours[maxAreaIdx].size()-1   && tmpdist < dist) {
-            tmpdist = norm(contours[maxAreaIdx][i] - contours[maxAreaIdx][pnt]);
-            vp.push_back(contours[maxAreaIdx][i]);
-            i++;
-        }
-        int sze = i - pnt + 1;
-        
-        Point p = contours[maxAreaIdx][i] + contours[maxAreaIdx][i-1] ;
-        p = p * 0.5;
-        
-        vp.push_back(p);
-        
-        newVector tmp(sze, vp, 0, "DistVec");
-        
-        return tmp;
-        
-    }
-    
-    int getIndexofPoint(Point &p)
-    {
-        int idx = 0;
-        
-        for (int i =0; i<contours[maxAreaIdx].size(); i++) {
-            if (contours[maxAreaIdx][i] == p) {
-                idx = i ;
-            }
-        }
-        
-        return idx;
-    }
+  
     
     
     
