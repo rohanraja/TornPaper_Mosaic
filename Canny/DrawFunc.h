@@ -63,3 +63,59 @@ int calcIntfor(Mat &image1)
     
     return basescore;
 }
+
+
+double getSlopeTan(Point &v11)
+{
+    double tanangle1 ;
+    
+    if(v11.x == 0)
+    {
+        if (v11.y > 0)
+            tanangle1 = 90;
+        else
+            tanangle1 = -90;
+    }
+    else
+    {
+        tanangle1 = atan(float((float)v11.y /(float) v11.x));
+        tanangle1 = (tanangle1 * 180) / PI ;
+        if (v11.y < 0 && v11.x < 0) {
+            tanangle1 = tanangle1 - 180 ;
+        }
+        if (v11.y > 0 && v11.x < 0) {
+            tanangle1 = 180 + tanangle1;
+        }
+    }
+    if(v11.y == 0)
+    {
+        if (v11.x > 0)
+            tanangle1 = 0;
+        else
+            tanangle1 = 180;
+    }
+    
+    
+    return tanangle1;
+}
+
+double get_signed_angle(Point &v11, Point &v22)
+{
+    float ss = v11.x*v22.x + v11.y*v22.y;
+    ss = ss / (norm(v11)*norm(v22)) ;
+    ss = acos(ss) ;
+    ss = (ss * 180) / PI ;
+    
+    int anglegrad = -1;
+    double tanangle1, tanangle2;
+    
+    tanangle1 = getSlopeTan(v11);
+    tanangle2 = getSlopeTan(v22);
+    
+    if(tanangle2>tanangle1)
+        anglegrad = -1;
+    else
+        anglegrad = 1;
+    
+    return anglegrad*ss; ;
+}

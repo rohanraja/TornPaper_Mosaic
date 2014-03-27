@@ -53,7 +53,7 @@ newVector getPoint_Dist2(Point &sp, float dist, vector<Point> &contourss)
 
 class VectTrans
 {
-    newVector a,b;
+    newVector a,candi_nv;
     Mat m1,m2, warp_mat;
     vector<Point> conts ;
     vector<int> vecIdx ;
@@ -67,7 +67,7 @@ public:
         //   solve();
     }
     
-    VectTrans(newVector v1, newVector v2) : a(v1), b(v2)
+    VectTrans(newVector v1, newVector v2) : a(v1), candi_nv(v2)
     {
         // v1.printAll();
         m1 = v1.plotPoints();
@@ -89,13 +89,13 @@ public:
         int cnt_idx ;
         
         if (iscnt==1)
-            cnt_idx = b.num-1;
+            cnt_idx = candi_nv.num-1;
         else
             cnt_idx = 0;
         
         
-        Point center = b.pts[cnt_idx];
-        Point endpt = b.pts[b.num-1 - cnt_idx];
+        Point center = candi_nv.pts[cnt_idx];
+        Point endpt = candi_nv.pts[candi_nv.num-1 - cnt_idx];
         
         nv = *new newVector();
         nv = getPoint_Dist2(conts[startIdx],p2dist, conts) ;
@@ -225,19 +225,19 @@ public:
     {
         conts = countt;
         
-        b = *new newVector(len,MB2.corners,st, "Compare Case");
-        b.translate_to_point(b.pts[0] );
+        candi_nv = *new newVector(len,MB2.corners,st, "Compare Case");
+        candi_nv.translate_to_point(candi_nv.pts[0] );
         
-        maxC = b.getMaxCoord();
-        minC = b.getMinCoord();
+        maxC = candi_nv.getMaxCoord();
+        minC = candi_nv.getMinCoord();
         diffC = maxC - minC ;
         
-        b.translate_to_point(minC - Point(15,15));
+        candi_nv.translate_to_point(minC - Point(15,15));
         
         
-        m2 = b.plotPoints(1,diffC.x, diffC.y) ;
+        m2 = candi_nv.plotPoints(1,diffC.x, diffC.y) ;
         
-        p2dist = norm(b.pts[0] - b.pts[b.num-1]) ;
+        p2dist = norm(candi_nv.pts[0] - candi_nv.pts[candi_nv.num-1]) ;
         
         double t = (double)getTickCount();
         int sim, sim_max = INT_MAX, sim_idx ;

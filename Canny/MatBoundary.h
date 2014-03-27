@@ -9,7 +9,13 @@ class MatBoundary
     int rows, cols, max_p;
     Mat mat, nmat, drawing ;
     
+    vector<Point> cannyContour;
+    vector<Point> NONcannyContour;
+    
 public:
+    
+    vector<Point> corners;
+    vector<int> cornerIndexes;
     
     MatBoundary()
     {
@@ -25,6 +31,12 @@ public:
         cols = src.cols;
         mat = Mat::zeros( rows,cols, CV_8UC1 );
         cvtColor(src, mat,COLOR_RGB2GRAY);
+        
+    //    doHistogram();
+      //  doThreashold(); // Changes are to nmat only
+        
+        
+        
     }
     
     MatBoundary(MatBoundary &m)
@@ -184,24 +196,26 @@ public:
         namedWindow( "TEST CORNERS22", CV_WINDOW_AUTOSIZE );
         imshow("TEST CORNERS22", crop);
         
+        calcNonCannY();
+        
         return crop.clone();
     }
     
-    vector<Point> getNonCannY()
+    void calcNonCannY()
     {
         Mat drawing2;
         
-       vector<vector<Point> > contours2;
+        vector<vector<Point> > contours2;
         
         int maxIDX ;
         Mat canny_output;
         
         
         /// Detect edges using canny
-      //  Canny( nmat, canny_output, thresh, thresh*2, 3);
+        //  Canny( nmat, canny_output, thresh, thresh*2, 3);
         /// Find contours
         
-           canny_output = nmat.clone();
+        canny_output = nmat.clone();
         
         findContours( canny_output, contours2, hierarchy, RETR_LIST, CHAIN_APPROX_NONE );
         
@@ -229,14 +243,20 @@ public:
         imshow("NONCANNY", drawing2);
         
         
-        return contours2[maxIDX];
+        NONcannyContour = contours2[maxIDX];
         
-
+        
         
     }
     
-    vector<Point> corners;
-    vector<int> cornerIndexes;
+    vector<Point> getNonCannY()
+    {
+        
+        return NONcannyContour ;
+
+    }
+    
+    
     
     Mat getCorners(int delta)
     {
@@ -523,6 +543,16 @@ public:
         
         //ee.
         
+    }
+    
+    newVector getCandi_nv()
+    {
+        
+        newVector candidate_nv(length_of_candidate_points, NONcannyContour ,0, "Candi");
+        
+        candidate_nv.translate_to_point(candidate_nv.pts[0] );
+        
+        return candidate_nv;
     }
     
     
