@@ -8,6 +8,7 @@
 #include "RepositionTwoIm.h"
 #include "VectorTrans.h"
 #include "TwoImgMatch.h"
+#include "CompareN.h"
 
 
 #define PI 3.14159265
@@ -33,44 +34,19 @@ int main( int argc, char** argv )
     /// Load source image and convert it to gray
     Mat src = imread( "/Users/rohanraja/Documents/Rails_Projects/Opensoft/santosh_kumar/bin/other files/Image003.jpg" , 1 );
     
-//    resize(src, src, Size(), 0.3, 0.3, INTER_CUBIC);
-//    
-//    mb = *new MatBoundary(src) ;
-//
-//    drawing = mb.getBoundary();
-//    
-//    drawing = mb.getCorners(3);
-//
-//    drawing2 = drawing;
-//    
-//    src = imread( "/Users/rohanraja/Documents/Rails_Projects/Opensoft/santosh_kumar/bin/other files/Image001.jpg" , 1 );
-//    resize(src, src, Size(), 0.3, 0.3, INTER_CUBIC);
-//    
-//     mb2 = *new MatBoundary(src) ;
-//    
-//    Mat dr2 = mb2.getBoundary();
     
-  //  dr2 = mb2.getCorners(3);
-    
-    CompareTwo cmp("/Users/rohanraja/Documents/Rails_Projects/Opensoft/santosh_kumar/bin/other files/Image003.jpg", "/Users/rohanraja/Documents/Rails_Projects/Opensoft/santosh_kumar/bin/other files/Image001.jpg", "/Users/rohanraja/Documents/Rails_Projects/Opensoft/santosh_kumar/bin/other files/Image002.jpg");
+//    CompareTwo cmp("/Users/rohanraja/Documents/Rails_Projects/Opensoft/santosh_kumar/bin/other files/Image003.jpg", "/Users/rohanraja/Documents/Rails_Projects/Opensoft/santosh_kumar/bin/other files/Image001.jpg", "/Users/rohanraja/Documents/Rails_Projects/Opensoft/santosh_kumar/bin/other files/Image002.jpg");
     
   //  CompareTwo cmp("/Users/rohanraja/Downloads/resources/Image005.jpg", "/Users/rohanraja/Downloads/resources/Image006.jpg", "/Users/rohanraja/Documents/Rails_Projects/Opensoft/santosh_kumar/bin/other files/Image002.jpg");
     
-    cmp.findMostSimilar();
+  //  cmp.findMostSimilar();
+    
+    CompareN cmpn("/Users/rohanraja/Documents/Rails_Projects/Opensoft/santosh_kumar/bin/other files/Image003.jpg", "/Users/rohanraja/Documents/Rails_Projects/Opensoft/santosh_kumar/bin/other files/Image001.jpg");
+    
+    
     
     char* source_window = "Source";
-//    namedWindow( source_window, CV_WINDOW_AUTOSIZE );
-//    imshow( source_window, dr2 );
-//    namedWindow( "Contours", CV_WINDOW_AUTOSIZE );
-//    imshow( "Contours", drawing );
-//    moveWindow( "Contours",400, 1 );
-//    
-  
-  //  VectTrans vtt(mb.contours[mb.maxAreaIdx], mb2, mb2.corners.size()/2 -15, 25, mb.cornerIndexes);
-    
-//    VectTrans vtt(mb2.contours[mb.maxAreaIdx], mb, 65, 30, mb2.cornerIndexes);
-    
-  //  vtt.findMostSimilar();
+
     
  //     createTrackbar( "TKBAR", source_window, &thresh, mb.contours[mb.maxAreaIdx].size(), thresh_callback );
    // thresh_callback(0,0);

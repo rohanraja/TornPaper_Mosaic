@@ -119,3 +119,9 @@ double get_signed_angle(Point &v11, Point &v22)
     
     return anglegrad*ss; ;
 }
+
+void showMat(Mat &m, char *windowname)
+{
+    namedWindow( windowname, CV_WINDOW_AUTOSIZE );
+    imshow(windowname, m);
+}

@@ -49,8 +49,8 @@ public:
         mat = Mat::zeros( rows,cols, CV_8UC1 );
         cvtColor(src, mat,COLOR_RGB2GRAY);
         
-    //    doHistogram();
-     //   doThreashold(); // Changes are to nmat only
+ //       doHistogram();
+   //     doThreashold(); // Changes are to nmat only
         
         
         
