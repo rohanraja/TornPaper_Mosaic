@@ -566,14 +566,14 @@ public:
         
      //  MB3.getNonLinearEdges();
         
-        vector<pair<Point,Point> > rough_starting_point = MB3.getRoughedges() ;
+        vector<RoughEdge> rough_starting_point = MB3.getRoughedges() ;
         
         for(int i = 0; i<rough_starting_point.size() ; i++)
         {
-            line(tmp, rough_starting_point[i].first, rough_starting_point[i].second, Scalar(255,255,255), 3);
+            line(tmp, rough_starting_point[i].roughpair.first, rough_starting_point[i].roughpair.second, Scalar(255,255,255), 3);
         }
         
-        int the_idx_in_NCanny = MB3.getNormfromFULL(rough_starting_point[0].first, rough_starting_point[0].second);
+        int the_idx_in_NCanny = MB3.getNormfromFULL(rough_starting_point[0].roughpair.first, rough_starting_point[0].roughpair.second);
         
         vector<Point> tttttt = MB3.contours[MB3.maxAreaIdx] ;
         

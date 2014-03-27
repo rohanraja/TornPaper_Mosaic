@@ -1,4 +1,21 @@
-
+class RoughEdge
+{
+    public :
+    int roughness_scores ;
+    pair<Point,Point> roughpair ;
+    int is_used ;
+    
+    RoughEdge(pair<Point,Point> rp, int rs, int is)
+    {
+        roughpair = rp;
+        roughness_scores = rs;
+        is_used = is;
+    }
+    
+    
+    
+    
+};
 
 class MatBoundary
 {
@@ -33,7 +50,7 @@ public:
         cvtColor(src, mat,COLOR_RGB2GRAY);
         
     //    doHistogram();
-      //  doThreashold(); // Changes are to nmat only
+     //   doThreashold(); // Changes are to nmat only
         
         
         
@@ -119,18 +136,12 @@ public:
     vector<Vec4i> hierarchy;
     
     
-    
     Mat getBoundary()
     {
         Mat drawing2;
-        
-        doHistogram();
-
-        
-        doThreashold();
-        
         Mat canny_output;
-        
+        doHistogram();
+           doThreashold();
         
         /// Detect edges using canny
         Canny( nmat, canny_output, thresh, thresh*2, 3);
@@ -198,6 +209,8 @@ public:
         
         calcNonCannY();
         
+        cannyContour = contours[maxAreaIdx];
+        
         return crop.clone();
     }
     
@@ -255,7 +268,6 @@ public:
         return NONcannyContour ;
 
     }
-    
     
     
     Mat getCorners(int delta)
@@ -462,34 +474,38 @@ public:
     
     int thresh_match = 65 ;
     
-    vector<pair<Point,Point> > getRoughedges()
+    vector<RoughEdge> rough_edges ;
+    
+    vector<RoughEdge> getRoughedges()
     {
         vector<Point> vvvpp = getPolyAPprox();
+
         
         
-        vector<pair<Point,Point> > rough_starting_point ;
         
         for(int j = 0 ; j < vvvpp.size(); j++ )
         {
             int curscore = checkforNonLinear(vvvpp[j],vvvpp[(j+1)%vvvpp.size()]);
             cout << "\n SCOREEEE = " << curscore ;
             if(curscore > thresh_match)
-                rough_starting_point.push_back(make_pair(vvvpp[j],vvvpp[(j+1)%vvvpp.size()]));
-            
+            {
+                RoughEdge re(make_pair(vvvpp[j],vvvpp[(j+1)%vvvpp.size()]),curscore,0) ;
+                
+                rough_edges.push_back(re);
+            }
         }
-        
-        return rough_starting_point ;
+        return rough_edges ;
     }
     
     int length_of_candidate_points = 100;
     
     int getNormfromFULL(Point &p1, Point &p2)
     {
-        int idx1 = findFROM_NC_TO_C(p1);
+        int idx1 = findIdexofNearestCNT(p1);
         int idx2 = findFROM_NC_TO_C(p2);
         
         
-        vector<Point> NC = contours[maxAreaIdx];
+        vector<Point> NC = getNonCannY();
         
         int d1 = abs(idx2-idx1);
         
@@ -500,7 +516,7 @@ public:
         double tmpdist, maxdist = 0;
         int max_idx = 0;
         
-        for(int i =0; i< nv.pts.size() - length_of_candidate_points ; i = i + nv.pts.size()/length_of_candidate_points)
+        for(int i =0; i< nv.pts.size() - length_of_candidate_points ; i = i + length_of_candidate_points)
         {
             newVector nv2(length_of_candidate_points, nv.pts, i, "NONLCHECK");
             
@@ -522,11 +538,11 @@ public:
     {
         Feature_vector fb ;
         
-        int idx1 = findFROM_NC_TO_C(p1);
-        int idx2 = findFROM_NC_TO_C(p2);
+        int idx1 = findIdexofNearestCNT(p1);
+        int idx2 = findIdexofNearestCNT(p2);
         
         
-        vector<Point> NC = contours[maxAreaIdx];
+        vector<Point> NC = getNonCannY();
         
         int d1 = abs(idx2-idx1);
         
@@ -545,15 +561,34 @@ public:
         
     }
     
-    newVector getCandi_nv()
+    
+    
+    newVector getCandi_from_RE(RoughEdge re)
     {
+        int the_idx_in_NCanny = getNormfromFULL(re.roughpair.first, re.roughpair.second);
         
-        newVector candidate_nv(length_of_candidate_points, NONcannyContour ,0, "Candi");
-        
-        candidate_nv.translate_to_point(candidate_nv.pts[0] );
+        newVector candidate_nv(length_of_candidate_points, NONcannyContour ,the_idx_in_NCanny, "Candi");
         
         return candidate_nv;
     }
+    
+    RoughEdge getBestRE()
+    {
+        int max_score = 0, max_idx = 0;
+        
+        for(int i=0; i<rough_edges.size(); i++)
+        {
+            if(rough_edges[i].roughness_scores > max_score && rough_edges[i].is_used != 1)
+            {
+                max_score = rough_edges[i].roughness_scores;
+                max_idx = i;
+            }
+        }
+        
+        return rough_edges[max_idx];
+    }
+    
+    
     
     
 };
